@@ -3,49 +3,8 @@ Function get_connection_filenames()
     get_connection_filenames = Array("Project.csv", "Rooms.csv")
 End Function
 
-Sub create_ribbon()
-    Set cbToolbar = Application.CommandBars.Add(csToolbarName, msoBarTop, False, True)
-    
-    With cbToolbar
-        Set ctButtonRefresh = .Controls.Add(Type:=msoControlButton, ID:=2950)
-        Set ctButtonMove = .Controls.Add(Type:=msoControlButton, ID:=2950)
-        Set ctButtonDefaults = .Controls.Add(Type:=msoControlButton, ID:=2950)
-        Set ctButtonSnapshot = .Controls.Add(Type:=msoControlButton, ID:=2950)
-    End With
-    
-    With ctButtonRefresh
-        .Style = msoButtonIconAndCaption
-        .Caption = "Обновить &Отчет"
-        .FaceId = 37
-        .OnAction = "Update"
-    End With
-    
-    With ctButtonMove
-        .Style = msoButtonIconAndCaption
-        .Caption = "Выбрать &Место"
-        .FaceId = 231
-        .OnAction = "SetLocation"
-    End With
-    
-    With ctButtonDefaults
-        .Style = msoButtonIconAndCaption
-        .Caption = "По &умолчанию"
-        .FaceId = 232
-        .OnAction = "SetDefaults"
-    End With
-    
-    With ctButtonSnapshot
-        .Style = msoButtonIconAndCaption
-        .Caption = "С&нимок"
-        .FaceId = 3633
-        .OnAction = "Snapshot"
-    End With
-    
-    With cbToolbar
-        .Visible = True
-        .Protection = msoBarNoChangeVisible
-    End With
-End Sub
+
+
 
 Sub load_csv()
     Dim fStr As String
@@ -62,7 +21,7 @@ Sub load_csv()
 
     With ThisWorkbook.Sheets(1).QueryTables.Add(Connection:= _
     "TEXT;" & fStr, Destination:=Range("$A$1"))
-        .Name = "CAPTURE"
+        .name = "CAPTURE"
         .FieldNames = True
         .RowNumbers = False
         .FillAdjacentFormulas = False
@@ -131,7 +90,7 @@ Sub UpdateConnections(ConName As String)
     With ActiveSheet.QueryTables.Add(Connection:= _
         "TEXT;" & ResultPath & "\" & ConName, Destination:=Range( _
         "$A$1"))
-        .Name = ConName
+        .name = ConName
         .FieldNames = True
         .RowNumbers = False
         .FillAdjacentFormulas = False
@@ -160,7 +119,7 @@ End Sub
 
 Sub Update()
     With ThisWorkbook.Sheets(1).QueryTables.Add(Connection:="TEXT;" & "mindata.csv", Destination:=Range("$B$1"))
-        .Name = "CAPTURE"
+        .name = "CAPTURE"
         .FieldNames = True
         .RowNumbers = False
         .FillAdjacentFormulas = False

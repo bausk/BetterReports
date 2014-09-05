@@ -8,7 +8,7 @@ Sub save_code_modules()
     With ThisWorkbook.VBProject
         For i% = 1 To .VBComponents.Count
             If .VBComponents(i%).CodeModule.CountOfLines > 0 Then
-                sName$ = .VBComponents(i%).CodeModule.Name
+                sName$ = .VBComponents(i%).CodeModule.name
                 .VBComponents(i%).Export FolderName & sName$ & ".vba"
             End If
         Next i
