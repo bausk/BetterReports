@@ -1,11 +1,4 @@
 Attribute VB_Name = "TestBetterReports"
-Function get_connection_filenames()
-    get_connection_filenames = Array("Project.csv", "Rooms.csv")
-End Function
-
-
-
-
 Sub load_csv()
     Dim fStr As String
     

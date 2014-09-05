@@ -7,40 +7,22 @@ Sub add_ribbon()
     On Error GoTo 0
         
     With cbToolbar
-        Set ctButtonRefresh = .Controls.Add(Type:=msoControlButton, ID:=2950)
-        Set ctButtonMove = .Controls.Add(Type:=msoControlButton, ID:=2950)
-        Set ctButtonDefaults = .Controls.Add(Type:=msoControlButton, ID:=2950)
-        Set ctButtonSnapshot = .Controls.Add(Type:=msoControlButton, ID:=2950)
+        Dim icons() As Variant
+        icons = Config.get_icons()
+        For x = LBound(icons) To UBound(icons)
+            Caption = icons(x)(0)
+            FaceId = icons(x)(1)
+            OnAction = icons(x)(2)
+            
+            Set ctButton = .Controls.Add(Type:=msoControlButton, ID:=2950)
+            
+            ctButton.Style = msoButtonIconAndCaption
+            ctButton.Caption = Caption
+            ctButton.FaceId = FaceId
+            ctButton.OnAction = OnAction
+        Next
     End With
-    
-    With ctButtonRefresh
-        .Style = msoButtonIconAndCaption
-        .Caption = "Обновить &Отчет"
-        .FaceId = 37
-        .OnAction = "Update"
-    End With
-    
-    With ctButtonMove
-        .Style = msoButtonIconAndCaption
-        .Caption = "Выбрать &Место"
-        .FaceId = 231
-        .OnAction = "SetLocation"
-    End With
-    
-    With ctButtonDefaults
-        .Style = msoButtonIconAndCaption
-        .Caption = "По &умолчанию"
-        .FaceId = 232
-        .OnAction = "SetDefaults"
-    End With
-    
-    With ctButtonSnapshot
-        .Style = msoButtonIconAndCaption
-        .Caption = "С&нимок"
-        .FaceId = 3633
-        .OnAction = "Snapshot"
-    End With
-    
+     
     With cbToolbar
         .Visible = True
         .Protection = msoBarNoChangeVisible
