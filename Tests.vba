@@ -40,11 +40,15 @@ Dim testconfig As Collection
 
 Set testconfig = config.cSettings
 
-If testconfig("ToolbarName") <> "BetterReports" Then
+If config.cSettings("ToolbarName") <> "BetterReports" Then
     MsgBox "Test Failed"
 End If
 
-If testconfig("Icons")(0)(0) <> "Обновить &отчет!" Then
+If config.cSettings("Icons")(0)(0) <> "Обновить &отчет!" Then
+    MsgBox "Test Failed"
+End If
+
+If config.cSettings("Filenames")(0) <> "Project.csv" Then
     MsgBox "Test Failed"
 End If
 
@@ -53,7 +57,26 @@ End Sub
 
 Sub test_dataset_1()
 'Testing CSV import from a dataset in local folder and putting them into a table
+row_cadre = 1
+config.mock_settings 1
 
+Dim wb As Workbook
+Dim ws As Worksheet
+
+Set wb = ActiveWorkbook
+Set ws = ActiveSheet
+'Set ws = wb.Sheets.Item(1)
+
+
+For x = LBound(config.cSettings("Filenames")) To UBound(config.cSettings("Filenames"))
+    Utility.clear_sheet ws
+    Utility.writeline row_cadre, config.cSettings("Filenames")(x)
+    Utility.add_file_connection row_cadre, config.cSettings("Filenames")(x)
+Next x
+
+Set TextCell = ws.Cells.Item(1, 1)
+
+TextCell.value = "dfdsfdsf"
 
 
 End Sub
