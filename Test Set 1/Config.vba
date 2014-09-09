@@ -1,13 +1,24 @@
 Attribute VB_Name = "Config"
-Function get_connection_filenames()
-    get_connection_filenames = Array("Project.csv", "Rooms.csv")
-End Function
+'Option Explicit
+Public cSettings As Collection
 
-Function get_icons()
-    get_icons = Array( _
-    Array("Обновить &Отчет", 37, "Update"), _
-    Array("Выбрать &Место", 231, "SetLocation"), _
+Public Sub get_settings()
+
+'Dim connection_filenames, icons As Variant
+Set cSettings = New Collection
+
+connection_filenames = Array("Project.csv", "Rooms.csv")
+cSettings.Add connection_filenames, "Filenames"
+
+icons = Array( _
+    Array("Обновить &отчет", 37, "Update"), _
+    Array("Выбрать &место", 231, "SetLocation"), _
     Array("По &умолчанию", 3633, "SetDefaults"), _
     Array("С&нимок", 280, "Snapshot") _
     )
-End Function
+cSettings.Add icons, "Icons"
+
+cSettings.Add "BetterReports", "ToolbarName"
+
+End Sub
+

@@ -1,6 +1,6 @@
 Attribute VB_Name = "Tests"
-Sub test1()
-    
+Sub unittest_getbyproperty()
+    'Test: getting getting specific items from a collection by their property
     'Mockup
     On Error Resume Next
     Dim cbToolbar As CommandBar
@@ -30,4 +30,36 @@ Sub test1()
     'Cleanup
     cbToolbar.Delete
 
+End Sub
+
+Sub unittest_config()
+'Test: example on how to get config properties
+
+config.get_settings
+Dim testconfig As Collection
+
+Set testconfig = config.cSettings
+
+If testconfig("ToolbarName") <> "BetterReports" Then
+    MsgBox "Test Failed"
+End If
+
+If testconfig("Icons")(0)(0) <> "Обновить &отчет!" Then
+    MsgBox "Test Failed"
+End If
+
+End Sub
+
+
+Sub test_dataset_1()
+'Testing CSV import from a dataset in local folder and putting them into a table
+
+
+
+End Sub
+
+Sub production()
+'Testing getting data from production folder (i.e. current file folder)
+
+'Not facking needed for ahnythin' good
 End Sub
