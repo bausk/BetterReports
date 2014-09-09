@@ -11,10 +11,14 @@ Private Sub Workbook_Activate()
     UI.refresh_buttons
 End Sub
 
+Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    UI.remove_buttons
+End Sub
+
 Private Sub Workbook_BeforeSave(ByVal SaveAsUI As Boolean, Cancel As Boolean)
     save_code_modules
 End Sub
 
 Private Sub Workbook_Deactivate()
-    UI.remove_buttons
+    'UI.remove_buttons
 End Sub

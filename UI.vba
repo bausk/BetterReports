@@ -42,13 +42,34 @@ EXT:
 End Sub
 
 Sub remove_buttons()
-    On Error GoTo EXT
+    config.production_settings
+    
+    'On Error GoTo EXT
     Dim cbToolbar As CommandBar
     Set cbToolbar = Utility.get_item_by_name(Application.CommandBars, "BetterReports")
-    With cbToolbar
-        .Visible = False
-    End With
-    cbToolbar.Delete
+    If Not cbToolbar Is Nothing Then
+        With cbToolbar
+            Dim icons() As Variant
+            icons = config.cSettings("Icons")
+            For x = LBound(icons) To UBound(icons)
+                Caption = icons(x)(0)
+                FaceId = icons(x)(1)
+                OnAction = icons(x)(2)
+                
+                'Behave wicked smaht when deleting buttons
+                Dim existing_button As CommandBarButton
+                Set existing_button = Utility.get_item_by_property(.Controls, "OnAction", "'" & Utility.get_fullname() & "'!" & OnAction)
+                If Not existing_button Is Nothing Then
+                    existing_button.Delete
+                End If
+            Next
+        End With
+    End If
+    
+    'With cbToolbar
+    '    .Visible = False
+    'End With
+    'cbToolbar.Delete
 EXT:
 End Sub
 

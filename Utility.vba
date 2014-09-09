@@ -3,6 +3,11 @@ Function get_cwd()
     get_cwd = ThisWorkbook.Path & "\"
 End Function
 
+Function get_fullname()
+    get_fullname = ThisWorkbook.FullName
+End Function
+
+
 Function get_item_by_name(iterable As Object, name As String)
     For x = 1 To iterable.Count
         If name = iterable.Item(x).name Then
