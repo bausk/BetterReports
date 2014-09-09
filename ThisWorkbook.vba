@@ -7,14 +7,14 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = True
-Private Sub Workbook_BeforeClose(Cancel As Boolean)
-    remove_ribbon
+Private Sub Workbook_Activate()
+    UI.refresh_buttons
 End Sub
 
 Private Sub Workbook_BeforeSave(ByVal SaveAsUI As Boolean, Cancel As Boolean)
     save_code_modules
 End Sub
 
-Private Sub Workbook_Open()
-    add_ribbon
+Private Sub Workbook_Deactivate()
+    UI.remove_buttons
 End Sub

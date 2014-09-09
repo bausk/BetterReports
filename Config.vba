@@ -14,7 +14,7 @@ icons = Array( _
     Array("Обновить &отчет", 37, "Update"), _
     Array("Выбрать &место", 231, "SetLocation"), _
     Array("По &умолчанию", 3633, "SetDefaults"), _
-    Array("С&нимок", 280, "Snapshot") _
+    Array("С&нимок", 280, "UI.Snapshot") _
     )
 cSettings.Add icons, "Icons"
 
