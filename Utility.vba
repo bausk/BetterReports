@@ -13,7 +13,7 @@ Function get_item_by_name(iterable As Object, name As String)
 End Function
 
 Function get_item_by_property(iterable As Object, propertyName As String, value As Variant)
-    get_item_by_property = Nothing
+    Set get_item_by_property = Nothing
     For x = 1 To iterable.Count
         If value = CallByName(iterable.Item(x), propertyName, VbGet) Then
             Set get_item_by_property = iterable.Item(x)
