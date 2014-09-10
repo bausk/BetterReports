@@ -13,7 +13,7 @@ Sub load_csv()
     End With
 
     With ThisWorkbook.Sheets(1).QueryTables.Add(Connection:= _
-    "TEXT;" & fStr, Destination:=Range("$A$1"))
+    "TEXT;" & fStr, Destination:=range("$A$1"))
         .name = "CAPTURE"
         .FieldNames = True
         .RowNumbers = False
@@ -81,7 +81,7 @@ Sub UpdateConnections(ConName As String)
     ThisWorkbook.Worksheets(1).Select
     ActiveSheet.Cells.Clear
     With ActiveSheet.QueryTables.Add(Connection:= _
-        "TEXT;" & ResultPath & "\" & ConName, Destination:=Range( _
+        "TEXT;" & ResultPath & "\" & ConName, Destination:=range( _
         "$A$1"))
         .name = ConName
         .FieldNames = True
@@ -111,7 +111,7 @@ Sub UpdateConnections(ConName As String)
 End Sub
 
 Sub Update()
-    With ThisWorkbook.Sheets(1).QueryTables.Add(Connection:="TEXT;" & "mindata.csv", Destination:=Range("$B$1"))
+    With ThisWorkbook.Sheets(1).QueryTables.Add(Connection:="TEXT;" & "mindata.csv", Destination:=range("$B$1"))
         .name = "CAPTURE"
         .FieldNames = True
         .RowNumbers = False
