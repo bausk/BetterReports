@@ -139,18 +139,3 @@ Sub Update()
 
     End With
 End Sub
-
-Sub SetLocation()
-MsgBox "Переставляю в новое положение"
-End Sub
-
-
-Sub SetDefaults()
-MsgBox "Данные будут перезаписаны!"
-End Sub
-
-
-Sub Snapshot()
-MsgBox "Снимок данных"
-End Sub
-

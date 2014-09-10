@@ -57,7 +57,9 @@ End Sub
 
 Sub test_dataset_1()
 'Testing CSV import from a dataset in local folder and putting them into a table
+'Where to begin
 row_cadre = 1
+' use mockup config
 config.mock_settings 1
 
 Dim wb As Workbook
@@ -69,9 +71,9 @@ Set ws = ActiveSheet
 
 
 For x = LBound(config.cSettings("Filenames")) To UBound(config.cSettings("Filenames"))
-    Utility.clear_sheet ws
-    Utility.writeline row_cadre, config.cSettings("Filenames")(x)
-    Utility.add_file_connection row_cadre, config.cSettings("Filenames")(x)
+    XlsUtil.clear_sheet ws
+    XlsUtil.writeline row_cadre, config.cSettings("Filenames")(x)
+    XlsUtil.add_file_connection row_cadre, config.cSettings("Filenames")(x)
 Next x
 
 Set TextCell = ws.Cells.Item(1, 1)
