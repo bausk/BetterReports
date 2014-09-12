@@ -1,6 +1,8 @@
 Attribute VB_Name = "Config"
 'Option Explicit
 Public cSettings As Collection
+Public Dir As Direction
+'DayOff = workdayconstant
 
 Public Sub production_settings()
 
@@ -46,3 +48,4 @@ ElseIf i = 2 Then
 End If
 
 End Sub
+

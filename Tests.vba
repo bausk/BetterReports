@@ -54,39 +54,13 @@ End If
 
 End Sub
 
-Sub test_dataset_1()
-'Testing CSV import from a dataset in local folder and putting them into a table
-'Where to begin
-row_cadre = 1
-' use mockup config
-config.mock_settings 1
-
-Dim wb As Workbook
-Dim ws As Worksheet
-
-Set wb = ActiveWorkbook
-Set ws = ActiveSheet
-'Set ws = wb.Sheets.Item(1)
-
-
-For x = LBound(config.cSettings("Filenames")) To UBound(config.cSettings("Filenames"))
-    XlsUtil.clear_sheet ws
-    XlsUtil.writeline ws, row_cadre, config.cSettings("Filenames")(x)
-    XlsUtil.add_file_connection ws, row_cadre, config.cSettings("Filenames")(x)
-Next x
-
-Set TextCell = ws.Cells.Item(1, 1)
-
-TextCell.value = "dfdsfdsf"
-End Sub
-
 Sub test_addconnection()
 Dim row_cadre As Integer, col_cadre As Integer, filename As String
 row_cadre = 4
 col_cadre = 5
+
 config.mock_settings 2
 dirname = Utility.get_cwd()
-
 Dim result As Boolean
 filename = config.cSettings("Filenames")(0)
 
@@ -109,6 +83,8 @@ XlsUtil.clear_sheet_connections
 End Sub
 
 Sub test_writers()
+
+'Test the write_cell, write_row and write_range routines that use cadre pointer
 
 Dim row_cadre As Integer
 row_cadre = 1
@@ -135,6 +111,30 @@ For x = 1 To 3
     col_cadre = original_col_position
 Next x
 End Sub
+
+Sub test_dataset_1()
+'Made after writers in XlsUtils were ready for prime time
+'Testing CSV import from a dataset in local folder and putting them into a table
+' use mockup config
+Dim row_cadre As Integer
+row_cadre = 1
+
+config.mock_settings 1
+dirname = Utility.get_cwd()
+Dim result As Boolean
+
+XlsUtil.clear_sheet
+'Testing fragment
+'For every file in config, write header and connection into current sheet, sequentially
+For x = LBound(config.cSettings("Filenames")) To UBound(config.cSettings("Filenames"))
+    filename = config.cSettings("Filenames")(x)
+    XlsUtil.write_cell config.cSettings("Filenames")(x), , row_cadre
+    XlsUtil.add_file_connection dirname & filename, filename, , row_cadre
+Next x
+
+'End of testing fragment
+End Sub
+
 
 Sub production()
 'Testing getting data from production folder (i.e. current file folder)

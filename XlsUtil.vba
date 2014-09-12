@@ -61,7 +61,7 @@ col_cadre = col_cadre + UBound(line_row) + 1
 write_row = True
 End Function
 
-Function write_range(range_2d As Variant, Optional sheet As Worksheet, Optional ByRef row_cadre = 1, Optional ByRef col_cadre = 1) As Boolean
+Function write_range(range_2d As Variant, Optional sheet As Worksheet, Optional ByRef row_cadre = 1, Optional ByRef col_cadre = 1, Optional Dirc = Direction.East) As Boolean
 If sheet Is Nothing Then
     Set sheet = ActiveSheet
 End If
@@ -93,7 +93,7 @@ col_cadre = original_col_cadre + col_shift + 1
 write_range = True
 End Function
 
-Function add_file_connection(filename As String, name As String, Optional sheet As Worksheet, Optional ByRef row_cadre As Integer = 1, Optional ByRef col_cadre As Integer = 1) As Boolean
+Function add_file_connection(filename, name, Optional sheet As Worksheet, Optional ByRef row_cadre As Integer = 1, Optional ByRef col_cadre As Integer = 1) As Boolean
 If sheet Is Nothing Then
     Set sheet = ActiveSheet
 End If
@@ -133,8 +133,8 @@ With current_connection
 
 End With
 
-row_cadre = current_connection.ResultRange.SpecialCells(xlCellTypeLastCell).row + 1
-col_cadre = current_connection.ResultRange.SpecialCells(xlCellTypeLastCell).Column + 1
+row_cadre = row_cadre + current_connection.ResultRange.Rows.Count
+col_cadre = col_cadre + current_connection.ResultRange.Columns.Count
 
 add_file_connection = True
 
