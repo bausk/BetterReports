@@ -135,32 +135,48 @@ Next x
 'End of testing fragment
 End Sub
 
-Sub test_parselinetoarray()
+Sub test_parse_csv_line()
 
 Dim line As String
 line = """D:\Documents\Dropbox\ASCONProjects\BetterReports\Test Set 1\Simple Test 1.tor"",""20121024"",""2014-9-9T12:41:47"",""2014-9-11T14:55:26"""
 result = Utility.parse_csv_line(line, ",", """")
+'MsgBox result(3)
+If result(3) <> "2014-9-11T14:55:26" Then MsgBox "Test 1 failed"
 
 line = ""","""","""
-result = Utility.parse_csv_line_2(line)
-'MsgBox result(0)
+result = Utility.parse_csv_line(line)
+If result(0) <> ",""," Then MsgBox "Test 2 failed"
 
 line = ",""Field 1"""","",""""""Field 2"","""""""""
-result = Utility.parse_csv_line_2(line)
-'MsgBox ":" & result(1) & ": :" & result(2)
+result = Utility.parse_csv_line(line)
+If result(1) <> "Field 1""," Or result(3) <> """" Then MsgBox "Test 3 failed"
 
 line = """B,C"",""D"""",E"""""",F,"
-result = Utility.parse_csv_line_2(line)
-MsgBox ":" & result(1) & ": :" & result(2) & ": :" & result(3) & ": :"
-
+result = Utility.parse_csv_line(line)
+If result(1) <> "D"",E""" Or result(2) <> "F" Then MsgBox "Test 4 failed"
 
 line = ""","","""",""A"",""B,C"",""D"""",E"""""",F,"
-result = Utility.parse_csv_line_2(line)
-MsgBox ":" & result(1) & ": :" & result(2) & ": :" & result(3) & ": :" & result(4)
+result = Utility.parse_csv_line(line)
+'MsgBox ":" & result(1) & ": :" & result(2) & ": :" & result(3) & ": :" & result(4)
 
 
 
 End Sub
+
+Sub test_properties()
+
+PropType = Utility.get_property_type("huehuehuehuehue")
+Set Prop1 = ActiveWorkbook.CustomDocumentProperties.Add(name:="Range", LinkToContent:=False, Type:=PropType, value:="Huhuehue")
+End Sub
+
+Sub test_find_named_range()
+
+Dim r As range
+Set r = XlsUtil.find_named_range("Sample")
+MsgBox r.name
+
+End Sub
+
 
 Sub production()
 'Testing getting data from production folder (i.e. current file folder)

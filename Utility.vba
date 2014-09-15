@@ -7,8 +7,7 @@ Function get_fullname()
     get_fullname = ThisWorkbook.FullName
 End Function
 
-
-Function get_item_by_name(iterable As Object, name As String)
+Function get_item_by_name(iterable As Object, name)
     For x = 1 To iterable.Count
         If name = iterable.Item(x).name Then
             Set get_item_by_name = iterable.Item(x)
@@ -17,10 +16,10 @@ Function get_item_by_name(iterable As Object, name As String)
     Next x
 End Function
 
-Function get_item_by_property(iterable As Object, propertyName As String, value As Variant)
+Function get_item_by_property(iterable As Object, PropertyName As String, value As Variant)
     Set get_item_by_property = Nothing
     For x = 1 To iterable.Count
-        If value = CallByName(iterable.Item(x), propertyName, VbGet) Then
+        If value = CallByName(iterable.Item(x), PropertyName, VbGet) Then
             Set get_item_by_property = iterable.Item(x)
             Exit For
         End If
@@ -28,64 +27,7 @@ Function get_item_by_property(iterable As Object, propertyName As String, value 
 End Function
 
 'Split a string into an array based on a Delimiter and a Text Identifier
-Function parse_csv_line(sInput As String, Optional m_Delim As String = ",", _
-                                  Optional m_TextIdentifier As String = """") As Variant
-   'Dim vArr As Variant
-   Dim sArr() As String
-   Dim bInText As Boolean
-   Dim i As Long, n As Long
-   Dim sTemp As String, tmp As String
-
-   If sInput = "" Or InStr(1, sInput, m_Delim) = 0 Then
-      'zero length string, or delimiter not present
-      'dump all input into single-element array (minus Text Identifier)
-      ReDim sArr(0)
-      sArr(0) = Replace(sInput, m_TextIdentifier, "")
-      ParseLineToArray = sArr()
-   Else
-      If InStr(1, sInput, m_TextIdentifier) = 0 Then
-         'no text identifier so just split and return
-         sArr() = Split(sInput, m_Delim)
-         ParseLineToArray = sArr()
-      Else
-         'found the text identifier, so do it the long way
-         bInText = False
-         sTemp = ""
-         n = 0
-
-         For i = 1 To Len(sInput)
-            tmp = Mid(sInput, i, 1)
-            If tmp = m_TextIdentifier Then
-               'just toggle the flag - don't add to string
-               bInText = Not bInText
-            Else
-               If tmp = m_Delim Then
-                  If Not bInText Then
-                     'delimiter not within quoted text, so add next array member
-                     ReDim Preserve sArr(n)
-                     sArr(n) = sTemp
-                     sTemp = ""
-                     n = n + 1
-                  Else
-                     sTemp = sTemp & tmp
-                  End If
-               Else
-                  sTemp = sTemp & tmp
-               End If           'character is a delimiter
-            End If              'character is a quote marker
-         Next i
-
-         ReDim Preserve sArr(n)
-         sArr(n) = sTemp
-
-         parse_csv_line = sArr()
-      End If 'has any quoted text
-   End If 'parseable
-
-End Function
-
-'Split a string into an array based on a Delimiter and a Text Identifier
-Function parse_csv_line_2(input_line As String, Optional delimeter As String = ",", Optional text_identifier As String = """") As Variant
+Function parse_csv_line(input_line As String, Optional delimeter As String = ",", Optional text_identifier As String = """") As Variant
 Dim result() As String
 Dim input_array() As String
 Dim in_text_flag As Boolean
@@ -140,47 +82,100 @@ For Each x In input_array
     End If
 Next x
 
-'For i = 0 To UBound(result)
-'    result(i) = trim_ends(result(i))
-'Next i
-
-parse_csv_line_2 = result()
+parse_csv_line = result()
 End Function
 
-Function escape_outtext(line, escape As String) As String
-    tempstring = Replace(line, """""", "")
-    If InStr(1, tempstring, """") = 1 Then
-        
-    If Left(line, 1) = """" Then
-        
-    End If
-    
-    escape_right = StrReverse(Replace(StrReverse(line), escape & escape, escape))
-End Function
+Function get_custom_property(PropertyName As String, Optional WhatWorkbook As Workbook) As Variant
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' GetProperty
+' This procedure returns the value of a DocumentProperty named in
+' PropertyName. It will examine BuiltinDocumentProperties,
+' or CustomDocumentProperties, or both. The parameters are:
+'
+'   PropertyName        The name of the property to return.
+'
+'   PropertySet         One of PropertyLocationBuiltIn,
+'                       PropertyLocationCustom, or PropertyLocationBoth.
+'                       This specifies the property set to search.
+'
+'   WhatWorkbook        A reference to the workbook whose properties
+'                       are to be examined. If omitted or Nothing,
+'                       ThisWorkbook is used.
+'
+' The function will return:
+'
+'   The value of property named by PropertyName, or
+'
+'   #VALUE if the PropertySet parameter is not valid (test with IsError), or
+'
+'   Null if the property could not be found (test with IsNull)
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Dim WB As Workbook
+Dim Props1 As Office.DocumentProperties
+Dim Props2 As Office.DocumentProperties
+Dim Prop As Office.DocumentProperty
 
-
-Function escape_left(line, escape As String) As String
-    escape_left = Replace(line, escape & escape, escape)
-End Function
-
-Function escape_right(line, escape As String) As String
-    tempstring = Replace(line, """""", "")
-    If InStr(1, tempstring, """") = 1 Then
-        
-    If Left(line, 1) = """" Then
-        line = Right(line, Len(line) - 1)
-    End If
-    
-    escape_right = StrReverse(Replace(StrReverse(line), escape & escape, escape))
-End Function
-
-
-Function trim_ends(line) As String
-If Left(line, 1) = """" Then
-    line = Right(line, Len(line) - 1)
-    If Right(line, 1) = """" Then
-        line = Left(line, Len(line) - 1)
-    End If
+'''''''''''''''''''''''''''''''''''''''''
+' Set the workbook whose properties we
+' will search.
+'''''''''''''''''''''''''''''''''''''''''
+If WhatWorkbook Is Nothing Then
+    Set WB = ThisWorkbook
+Else
+    Set WB = WhatWorkbook
 End If
-trim_ends = line
+
+Set Props1 = WB.CustomDocumentProperties
+
+On Error Resume Next
+'''''''''''''''''''''''''''''''''''''''''
+' Search either BuiltIn or Custom.
+'''''''''''''''''''''''''''''''''''''''''
+Set Prop = Props1(PropertyName)
+If Err.Number <> 0 Then
+    ''''''''''''''''''''''''''''''''''
+    ' Not found in one set. See if
+    ' we need to look in the other.
+    ''''''''''''''''''''''''''''''''''
+    GetProperty = Null
+    Exit Function
+End If
+
+''''''''''''''''''''''''''''''''''''
+' Property found. Return the value.
+''''''''''''''''''''''''''''''''''''
+GetProperty = Prop.value
+
 End Function
+
+Function get_property_type(V As Variant) As Variant
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' GetPropertyType
+' This tests the data type of V and returns the appropriate Property type.
+' Returns a member of the VbVarType group or NULL if an illegal type (e.g,
+' an Object) is found. Be sure to test the return value with IsNull.
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+Select Case VarType(V)
+    Case vbArray, vbDataObject, vbEmpty, vbError, vbNull, vbObject, _
+        vbUserDefinedType, vbCurrency, vbDecimal
+        ''''''''''''''''''''''''''''''''''''
+        ' Illegal types. Return NULL.
+        ''''''''''''''''''''''''''''''''''''
+        get_property_type = Null
+        Exit Function
+    ''''''''''''''''''''''''''''''''''
+    ' All numeric types are rolled up
+    ' into Floats. Strings and Booleans
+    ' get their own types.
+    ''''''''''''''''''''''''''''''''''
+    Case vbString
+        get_property_type = msoPropertyTypeString
+    Case vbBoolean
+        get_property_type = msoPropertyTypeBoolean
+    Case Else
+        get_property_type = msoPropertyTypeFloat
+End Select
+
+End Function
+

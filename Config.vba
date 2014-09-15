@@ -12,11 +12,15 @@ Set cSettings = New Collection
 connection_filenames = Array("Project.csv", "Rooms.csv")
 cSettings.Add connection_filenames, "Filenames"
 
+connection_names = Array("TornadoProject", "TornadoRooms")
+cSettings.Add connection_names, "Names"
+
 icons = Array( _
-    Array("Обновить &отчет", 37, "Update"), _
-    Array("Выбрать &место", 231, "SetLocation"), _
-    Array("По &умолчанию", 3633, "SetDefaults"), _
-    Array("С&нимок", 280, "UI.Snapshot") _
+    Array("Выбрать &место", 231, "UI.set_location"), _
+    Array("Обновить &отчет", 37, "UI.update"), _
+    Array("По &умолчанию", 3633, "UI.set_defaults"), _
+    Array("Выбрать &источник", 270, "UI.snapshot"), _
+    Array("С&нимок", 280, "UI.snapshot") _
     )
 cSettings.Add icons, "Icons"
 
@@ -33,6 +37,9 @@ If i = 1 Then
     connection_filenames = Array("Test Set 1\Project.csv", "Test Set 1\Rooms.csv", "Test Set 1\Doors.csv", "Test Set 1\Windows.csv")
     cSettings.Add connection_filenames, "Filenames"
     
+    connection_names = Array("TornadoProject", "TornadoRooms", "TornadoDoors", "TornadoWindows")
+    cSettings.Add connection_names, "Names"
+
     icons = Array( _
         Array("Обновить &отчет", 37, "Update"), _
         Array("Выбрать &место", 231, "SetLocation"), _

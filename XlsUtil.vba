@@ -139,3 +139,17 @@ col_cadre = col_cadre + current_connection.ResultRange.Columns.Count
 add_file_connection = True
 
 End Function
+
+Function find_named_range(range_name) As range
+Set find_named_range = Nothing
+heh = Utility.get_item_by_name(ActiveWorkbook.Names, range_name)
+If heh = Empty Then
+    Exit Function
+    End If
+Set find_named_range = ThisWorkbook.ActiveSheet.range(heh)
+End Function
+
+Function rename_range() As Boolean
+
+End Function
+

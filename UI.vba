@@ -73,7 +73,6 @@ Sub remove_buttons()
 EXT:
 End Sub
 
-
 Sub refresh_buttons()
     config.production_settings
     
@@ -111,6 +110,43 @@ Sub refresh_buttons()
     End With
 End Sub
 
-Sub Snapshot()
+Sub update()
+    MsgBox "Update: " & ThisWorkbook.FullName
+End Sub
+
+Sub set_location()
+    Dim ThisRng As range
+    Set ThisRng = Application.InputBox("Select a range", "Get Range", Type:=8)
+End Sub
+
+Sub set_defaults()
+
+config.mock_settings 1
+Dim Rng As range
+Set Rng = Nothing
+Dim connection_name As String
+Dim rangename As Variant
+
+For Each rangename In cSettings("Names")
+    Set Rng = XlsUtil.find_named_range(rangename)
+    If Not Rng Is Nothing Then
+        connection_name = rangename
+        Exit For
+    End If
+Next rangename
+If Rng Is Nothing Then
+    connection_name = FileUtil.get_csv_file_path()
+End If
+MsgBox connection_name
+
+End Sub
+
+Sub set_source()
+
+
+End Sub
+
+
+Sub snapshot()
     MsgBox "Snapshot: " & ThisWorkbook.FullName
 End Sub
