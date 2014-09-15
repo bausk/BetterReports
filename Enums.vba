@@ -17,6 +17,3 @@ Northwest
 North
 Northeast
 End Enum
-
-Dim Dirc As Direction
-

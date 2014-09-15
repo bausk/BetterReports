@@ -135,6 +135,32 @@ Next x
 'End of testing fragment
 End Sub
 
+Sub test_parselinetoarray()
+
+Dim line As String
+line = """D:\Documents\Dropbox\ASCONProjects\BetterReports\Test Set 1\Simple Test 1.tor"",""20121024"",""2014-9-9T12:41:47"",""2014-9-11T14:55:26"""
+result = Utility.parse_csv_line(line, ",", """")
+
+line = ""","""","""
+result = Utility.parse_csv_line_2(line)
+'MsgBox result(0)
+
+line = ",""Field 1"""","",""""""Field 2"","""""""""
+result = Utility.parse_csv_line_2(line)
+'MsgBox ":" & result(1) & ": :" & result(2)
+
+line = """B,C"",""D"""",E"""""",F,"
+result = Utility.parse_csv_line_2(line)
+MsgBox ":" & result(1) & ": :" & result(2) & ": :" & result(3) & ": :"
+
+
+line = ""","","""",""A"",""B,C"",""D"""",E"""""",F,"
+result = Utility.parse_csv_line_2(line)
+MsgBox ":" & result(1) & ": :" & result(2) & ": :" & result(3) & ": :" & result(4)
+
+
+
+End Sub
 
 Sub production()
 'Testing getting data from production folder (i.e. current file folder)
