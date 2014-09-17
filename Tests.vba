@@ -160,7 +160,6 @@ result = Utility.parse_csv_line(line)
 'MsgBox ":" & result(1) & ": :" & result(2) & ": :" & result(3) & ": :" & result(4)
 
 
-
 End Sub
 
 Sub test_properties()

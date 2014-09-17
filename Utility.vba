@@ -148,6 +148,16 @@ GetProperty = Prop.value
 
 End Function
 
+Function in_array(value, list_array() As String) As Integer
+in_array = -1
+For x = 0 To UBound(list_array)
+    If value = list_array(x) Then
+        in_array = x
+        Exit Function
+    End If
+Next x
+End Function
+
 Function get_property_type(V As Variant) As Variant
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ' GetPropertyType
@@ -179,3 +189,40 @@ End Select
 
 End Function
 
+'?? utf-8 ? Unicode
+Function UTF8_16(s)
+    UTF8_16 = ""
+    Dim i, j, j2, ch, k1, k2, k3, m
+    i = 1
+    Do While i <= Len(s)
+        ch = Mid(s, i, 1)
+        j = CLng(Asc(ch))
+        If j >= 128 Then
+            If j < 224 Then
+                '2 ?????
+                k1 = j Mod 32
+                i = i + 1
+                ch = Mid(s, i, 1)
+                j2 = CLng(Asc(ch))
+                k2 = j2 Mod 64
+                'ChrW - ?????? ?? UTF-16 ????????
+                UTF8_16 = UTF8_16 & ChrW(k2 + k1 * 64)
+            Else
+                '3 ?????
+                k1 = j Mod 16
+                i = i + 1
+                ch = Mid(s, i, 1)
+                j2 = CLng(Asc(ch))
+                k2 = j2 Mod 64
+                i = i + 1
+                ch = Mid(s, i, 1)
+                j2 = CLng(Asc(ch))
+                k3 = j2 Mod 64
+                UTF8_16 = UTF8_16 & ChrW(k3 + (k2 + k1 * 64) * 64)
+            End If
+        Else
+            UTF8_16 = UTF8_16 & ch
+        End If
+        i = i + 1
+    Loop
+End Function

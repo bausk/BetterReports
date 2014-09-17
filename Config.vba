@@ -15,6 +15,12 @@ cSettings.Add connection_filenames, "Filenames"
 connection_names = Array("TornadoProject", "TornadoRooms")
 cSettings.Add connection_names, "Names"
 
+Dim report_formats As Collection
+report_formats.Add Array("1:NUMBER", "2:NAME", "4:AREA"), "TornadoRooms"
+report_formats.Add Array("1:NUMBER", "2:NAME", "4:AREA"), "TornadoDoors"
+report_formats.Add Array("1:NUMBER", "2:NAME", "4:AREA"), "TornadoWindows"
+cSettings.Add report_formats, "Formats"
+
 icons = Array( _
     Array("Выбрать &место", 231, "UI.set_location"), _
     Array("Обновить &отчет", 37, "UI.update"), _
@@ -40,6 +46,20 @@ If i = 1 Then
     connection_names = Array("TornadoProject", "TornadoRooms", "TornadoDoors", "TornadoWindows")
     cSettings.Add connection_names, "Names"
 
+    Dim report_formats As Collection
+    Set report_formats = New Collection
+    report_formats.Add Array("1:NUMBER:Номер помещения", "2:NAME:Наименование", "4:AREA:Площадь, м.кв."), "TornadoRooms"
+    report_formats.Add Array("1:NUMBER", "2:NAME", "4:AREA"), "TornadoDoors"
+    report_formats.Add Array("1:NUMBER", "2:NAME", "4:AREA"), "TornadoWindows"
+    cSettings.Add report_formats, "Formats"
+    
+    Dim report_headings As Collection
+    Set report_headings = New Collection
+    report_headings.Add "Экспликация помещений", "TornadoRooms"
+    report_headings.Add "Экспликация дверных проемов", "TornadoDoors"
+    report_headings.Add "Экспликация оконных проемов", "TornadoWindows"
+    cSettings.Add report_headings, "Captions"
+    
     icons = Array( _
         Array("Обновить &отчет", 37, "Update"), _
         Array("Выбрать &место", 231, "SetLocation"), _
