@@ -150,6 +150,36 @@ If heh Is Nothing Then
 Set find_named_range = heh
 End Function
 
+
+Function find_connection(connection_names, file_names, ByRef connection_name, ByRef file_name, ByRef range_name) As range
+Dim named_range As range
+
+For x = 0 To UBound(connection_names)
+    Set range_name = XlsUtil.find_named_range(connection_names(x))
+    If Not range_name Is Nothing Then
+        Set named_range = ThisWorkbook.ActiveSheet.range(range_name)
+        connection_name = connection_names(x)
+        file_name = file_names(x)
+        Exit For
+    End If
+Next x
+
+If named_range Is Nothing Then
+    file_path = FileUtil.get_csv_file_path()
+    For x = 0 To UBound(file_names)
+        If file_path = Utility.get_cwd & file_names(x) Then
+            connection_name = connection_names(x)
+            file_name = file_names(x)
+            Exit For
+        End If
+    Next x
+End If
+
+Set find_connection = named_range
+End Function
+
+
+
 Function rename_range() As Boolean
 
 End Function
@@ -213,9 +243,22 @@ Next column_increment
 
 End Function
 
-Function find_spec_position(data_range As range, spec_dictionary() As String) As range
+Function find_spec_position(data_range As range, fullspec() As String) As range
+end_row = data_range.row - 1
+Dim csheet As Worksheet
+Set csheet = ActiveSheet
+Dim result As range
+Set find_spec_position = Nothing
 
-
+For x = 1 To end_row
+    'iterate through every row segment upper than the named data_range
+    For Each cCell In range(csheet.Cells(x, data_range.Column), csheet.Cells(x, data_range.Column + data_range.Columns.Count - 1))
+        If Utility.in_array(cCell.value, fullspec) > -1 Then
+            Set find_spec_position = csheet.Cells(x, data_range.Column)
+            Exit Function
+        End If
+    Next cCell
+Next x
 
 End Function
 
