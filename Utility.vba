@@ -226,3 +226,8 @@ Function UTF8_16(s)
         i = i + 1
     Loop
 End Function
+
+Function match_fields(string_array() As Variant, index As Integer, column() As String) As Variant()
+
+End Function
+

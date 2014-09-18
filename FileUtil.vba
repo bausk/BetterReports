@@ -26,7 +26,7 @@ Dim spec_line As String
 
 On Error GoTo FAIL
 
-Set fso = CreateObject("ADODB.Stream")
+'Set fso = CreateObject("ADODB.Stream")
 Open file_path For Input As #1
 Line Input #1, spec_line
 
@@ -45,6 +45,34 @@ Loop
 Close #1
 get_strings_from_file = data_array
 result = True
+
+FAIL:
+On Error GoTo 0
+End Function
+
+
+
+
+Function extract_table(filename As String, chapter As String) As Variant()
+On Error GoTo FAIL
+
+Open filename For Input As #1
+Line Input #1, line
+
+spec = Split(spec_line, ",")
+
+i = 0
+Do Until EOF(1)
+    ReDim Preserve data_array(i)
+    Dim aaa
+    Line Input #1, aaa
+    data_array(i) = Utility.UTF8_16(aaa)
+
+    'data_array(i) = StrConv(data_array(i), vbUnicode)
+    i = i + 1
+Loop
+Close #1
+get_strings_from_file = data_array
 
 FAIL:
 On Error GoTo 0

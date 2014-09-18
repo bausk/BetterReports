@@ -1,6 +1,6 @@
 Attribute VB_Name = "UI"
 Sub add_ribbon()
-    config.mock_settings 1
+    config.production_settings
     
     On Error Resume Next
     Set cbToolbar = Application.CommandBars.Add(config.cSettings("ToolbarName"), msoBarFloating, False, True)
@@ -97,7 +97,7 @@ EXT:
 End Sub
 
 Sub refresh_buttons()
-    config.mock_settings 1
+    config.production_settings
     
     On Error Resume Next
     Set cbToolbar = Application.CommandBars.Add(config.cSettings("ToolbarName"), msoBarFloating, False, True)
@@ -158,14 +158,45 @@ End Sub
 
 Sub set_location()
     Dim ThisRng As range
-    Set ThisRng = Application.InputBox("Select a range", "Get Range", Type:=8)
+    On Error Resume Next
+    Set ThisRng = Application.InputBox("Выберите область отчета", "Выбрать область", Type:=8)
+    On Error GoTo 0
+    If ThisRng Is Nothing Then Exit Sub
+    
+    'find name
+    
+    config.production_settings
+    'Dim row_cadre As Integer, column_cadre As Integer
+    Dim keys() As Variant, values() As Variant, captions() As Variant
+    
+    Dim connection_name As String, file_path As String, file_name As String
+    'Dim rangename As Variant
+    Dim string_array() As String
+    
+    connection_names = cSettings("Names")
+    file_names = cSettings("Filenames")
+    
+    Dim named_range As range
+    Set named_range = Nothing
+    Dim range_name As name
+    
+    Set named_range = XlsUtil.find_connection(connection_names, file_names, connection_name, file_name, range_name)
+    If range_name Is Nothing Or range_name = "" Then Exit Sub
+    If connection_name = "" Then Exit Sub
+    
+    named_range.Delete
+    
+    ThisRng.name = connection_name
+   
+    update
+    
 End Sub
 
 Sub set_defaults()
 
 ActiveSheet.Cells.Clear
 'ActiveSheet.Rows.Ungroup
-config.mock_settings 1
+config.production_settings
 Dim row_cadre As Integer, column_cadre As Integer
 Dim keys() As Variant, values() As Variant, captions() As Variant
 Dim named_range As range
@@ -267,11 +298,11 @@ End Sub
 Sub popup(parameter As String)
 
 'MsgBox "hehe"
-MsgBox parameter
+'MsgBox parameter
 
 ActiveSheet.Cells.Clear
 'ActiveSheet.Rows.Ungroup
-config.mock_settings 1
+config.production_settings
 Dim row_cadre As Integer, column_cadre As Integer
 Dim keys() As Variant, values() As Variant, captions() As Variant
 Dim named_range As range
@@ -287,41 +318,19 @@ file_names = cSettings("Filenames")
 row_cadre = 1
 column_cadre = 1
 
-connection_name
-Set range_name = XlsUtil.find_named_range(connection_name)
-'Короче прибить рейндж если такой уже есть
+connection_name = parameter
 
 
 For x = 0 To UBound(connection_names)
     Set range_name = XlsUtil.find_named_range(connection_names(x))
-    If Not range_name Is Nothing Then
-        Set named_range = ThisWorkbook.ActiveSheet.range(range_name)
-        
-        connection_name = connection_names(x)
+    If Not range_name Is Nothing Then range_name.Delete
+    Set named_range = Nothing
+    If connection_name = connection_names(x) Then
         file_name = file_names(x)
-        Exit For
     End If
 Next x
 
-If named_range Is Nothing Then
-    file_path = FileUtil.get_csv_file_path()
-    For x = 0 To UBound(file_names)
-        If file_path = Utility.get_cwd & file_names(x) Then
-            connection_name = connection_names(x)
-            file_name = file_names(x)
-            Exit For
-        End If
-    Next x
-End If
 
-If Not range_name Is Nothing Then range_name.Delete
-Set named_range = Nothing
-
-If connection_name = "" Then
-    MsgBox "Не найден подходящий файл, используется источник по умолчанию: " & file_names(1)
-    connection_name = connection_names(1)
-    file_name = file_names(1)
-End If
 
 Dim fullspec() As String
 string_array = FileUtil.get_strings_from_file(Utility.get_cwd & file_name, result, fullspec)
@@ -404,7 +413,7 @@ End Sub
 
 Sub update()
 
-config.mock_settings 1
+config.production_settings
 Dim row_cadre As Integer, column_cadre As Integer
 Dim keys() As Variant, values() As Variant, captions() As Variant
 
@@ -434,6 +443,15 @@ If result = False Then Exit Sub
 
 Dim spec_cell As range
 Set spec_cell = XlsUtil.find_spec_position(named_range, fullspec)
+
+
+project_file = Utility.get_cwd & file_names(0)
+substitutions = cSettings("Substitutions")
+For Each substitution In substitutions
+    chapter_name = substitutions(0)
+    chapter_table = Utility.extract_table(project_file, chapter_name)
+    
+Next substitution
 
 XlsUtil.update_named_range named_range, spec_cell, fullspec, string_array
 

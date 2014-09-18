@@ -40,7 +40,7 @@ Set current_cell = sheet.Cells(row_cadre, col_cadre)
 current_cell = line
 
 row_cadre = current_cell.row + 1
-col_cadre = current_cell.Column + 1
+col_cadre = current_cell.column + 1
 write_cell = True
 End Function
 
@@ -157,7 +157,7 @@ Dim named_range As range
 For x = 0 To UBound(connection_names)
     Set range_name = XlsUtil.find_named_range(connection_names(x))
     If Not range_name Is Nothing Then
-        Set named_range = ThisWorkbook.ActiveSheet.range(range_name)
+        Set named_range = range_name.RefersToRange
         connection_name = connection_names(x)
         file_name = file_names(x)
         Exit For
@@ -197,7 +197,7 @@ spec_array = spec_array(name)
 
 'get initial address
 init_row = address.row
-init_column = address.Column
+init_column = address.column
 
 For x = 0 To UBound(spec_array)
     keyvalue_pair = Split(spec_array(x), ":")
@@ -218,11 +218,11 @@ End Function
 Function update_named_range(named_range As range, spec_cell As range, fullspec() As String, string_array() As String)
 
 
-content_init_column = named_range.Column
+content_init_column = named_range.column
 spec_row = spec_cell.row
 content_init_row = named_range.row
 Dim new_array() As Variant
-
+Dim affected_range As range
 
 For x = 0 To UBound(string_array)
     ReDim Preserve new_array(x)
@@ -238,8 +238,13 @@ For column_increment = 0 To named_range.Columns.Count - 1
             XlsUtil.write_cell temparray(spec_position), , content_init_row + y, content_init_column + column_increment
         Next y
     End If
-    
+    max_row = content_init_row + UBound(string_array)
+    max_col = content_init_column + column_increment
 Next column_increment
+
+Set affected_range = range(ActiveSheet.Cells(content_init_row, content_init_column), ActiveSheet.Cells(max_row, max_col))
+affected_range.Select
+affected_range.Style = "Output"
 
 End Function
 
@@ -252,9 +257,9 @@ Set find_spec_position = Nothing
 
 For x = 1 To end_row
     'iterate through every row segment upper than the named data_range
-    For Each cCell In range(csheet.Cells(x, data_range.Column), csheet.Cells(x, data_range.Column + data_range.Columns.Count - 1))
+    For Each cCell In range(csheet.Cells(x, data_range.column), csheet.Cells(x, data_range.column + data_range.Columns.Count - 1))
         If Utility.in_array(cCell.value, fullspec) > -1 Then
-            Set find_spec_position = csheet.Cells(x, data_range.Column)
+            Set find_spec_position = csheet.Cells(x, data_range.column)
             Exit Function
         End If
     Next cCell
