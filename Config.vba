@@ -18,7 +18,7 @@ cSettings.Add connection_names, "Names"
 Dim report_formats As Collection
 Set report_formats = New Collection
 report_formats.Add Array("1:NUMBER:Номер помещения", "2:NAME:Наименование", "4:AREA:Площадь, м.кв."), "TornadoRooms"
-report_formats.Add Array("2:WIDTH:Ширина", "3:HEIGHT:Высота", "4:AREA:Площадь"), "TornadoDoors"
+report_formats.Add Array("1:DOOR_STYLE:Марка двери", "2:WIDTH:Ширина", "3:HEIGHT:Высота", "4:AREA:Площадь"), "TornadoDoors"
 report_formats.Add Array("2:WIDTH:Ширина", "3:HEIGHT:Высота", "4:AREA:Площадь"), "TornadoWindows"
 cSettings.Add report_formats, "Formats"
 

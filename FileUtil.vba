@@ -51,29 +51,53 @@ On Error GoTo 0
 End Function
 
 
-
-
-Function extract_table(filename As String, chapter As String) As Variant()
-On Error GoTo FAIL
+Function extract_table(filename As String, chapter As String, ByRef keys_array() As String) As Variant()
+On Error GoTo FAIL1
+Dim data_array() As Variant
 
 Open filename For Input As #1
 Line Input #1, line
 
-spec = Split(spec_line, ",")
+Dim aaa
 
 i = 0
 Do Until EOF(1)
-    ReDim Preserve data_array(i)
-    Dim aaa
-    Line Input #1, aaa
-    data_array(i) = Utility.UTF8_16(aaa)
 
-    'data_array(i) = StrConv(data_array(i), vbUnicode)
+
+    Line Input #1, aaa
+    If aaa = chapter Then Exit Do
+    i = i + 1
+Loop
+
+
+i = 0
+Do Until EOF(1)
+
+    Line Input #1, aaa
+    Dim input_line As String
+    input_line = Utility.UTF8_16(aaa)
+    
+    input_array = Utility.parse_csv_line(input_line)
+    
+    If UBound(input_array) < 1 Then
+        Exit Do
+    End If
+    
+    ReDim Preserve keys_array(i)
+    ReDim Preserve data_array(i)
+    Dim data_line() As Variant
+    keys_array(i) = input_array(0)
+    For y = 1 To UBound(input_array)
+        ReDim Preserve data_line(y)
+        data_line(y) = input_array(y)
+    Next y
+    data_array(i) = data_line
     i = i + 1
 Loop
 Close #1
-get_strings_from_file = data_array
 
-FAIL:
+extract_table = data_array
+
+FAIL1:
 On Error GoTo 0
 End Function

@@ -217,28 +217,55 @@ End Function
 
 Function update_named_range(named_range As range, spec_cell As range, fullspec() As String, string_array() As String)
 
-
-content_init_column = named_range.column
-spec_row = spec_cell.row
-content_init_row = named_range.row
 Dim new_array() As Variant
-Dim affected_range As range
-
 For x = 0 To UBound(string_array)
     ReDim Preserve new_array(x)
     new_array(x) = Utility.parse_csv_line(string_array(x))
 Next x
 
+Dim project_file As String
+Dim chapter_name As String
+file_names = cSettings("Filenames")
+substitutions = cSettings("Substitutions")
+
+project_file = Utility.get_cwd & file_names(0)
+For Each substitution In substitutions
+    chapter_name = substitution(0)
+    what_name = substitution(1)
+    chapter_index = substitution(2)
+    Dim keys_array() As String, chapter_table() As Variant
+    chapter_table = FileUtil.extract_table(project_file, chapter_name, keys_array)
+    
+    index = Utility.in_array(what_name, fullspec)
+    If index = -1 Then GoTo CONTINUE
+    
+    For i = 0 To UBound(new_array)
+        element = new_array(i)(index)
+        key_index = Utility.in_array(element, keys_array)
+        element = chapter_table(key_index)(chapter_index)
+        new_array(i)(index) = element
+    Next i
+CONTINUE:
+Next substitution
+
+content_init_column = named_range.column
+spec_row = spec_cell.row
+content_init_row = named_range.row
+'Dim new_array() As Variant
+Dim affected_range As range
+
+
+
 For column_increment = 0 To named_range.Columns.Count - 1
     current_spec_value = ActiveSheet.Cells(spec_row, content_init_column + column_increment).value
     spec_position = Utility.in_array(current_spec_value, fullspec)
     If spec_position > -1 Then
-        For y = 0 To UBound(string_array)
+        For y = 0 To UBound(new_array)
             temparray = new_array(y)
             XlsUtil.write_cell temparray(spec_position), , content_init_row + y, content_init_column + column_increment
         Next y
     End If
-    max_row = content_init_row + UBound(string_array)
+    max_row = content_init_row + UBound(new_array)
     max_col = content_init_column + column_increment
 Next column_increment
 

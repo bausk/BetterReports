@@ -418,8 +418,7 @@ Dim row_cadre As Integer, column_cadre As Integer
 Dim keys() As Variant, values() As Variant, captions() As Variant
 
 Dim connection_name As String, file_path As String, file_name As String
-'Dim rangename As Variant
-Dim string_array() As String
+
 
 connection_names = cSettings("Names")
 file_names = cSettings("Filenames")
@@ -431,6 +430,7 @@ Dim named_range As range
 Set named_range = Nothing
 Dim range_name As name
 
+
 Set named_range = XlsUtil.find_connection(connection_names, file_names, connection_name, file_name, range_name)
 
 If range_name Is Nothing Or range_name = "" Then Exit Sub
@@ -438,20 +438,12 @@ If connection_name = "" Then Exit Sub
 
 Dim fullspec() As String
 Dim result As Boolean
+Dim string_array() As String
 string_array = FileUtil.get_strings_from_file(Utility.get_cwd & file_name, result, fullspec)
 If result = False Then Exit Sub
 
 Dim spec_cell As range
 Set spec_cell = XlsUtil.find_spec_position(named_range, fullspec)
-
-
-project_file = Utility.get_cwd & file_names(0)
-substitutions = cSettings("Substitutions")
-For Each substitution In substitutions
-    chapter_name = substitutions(0)
-    chapter_table = Utility.extract_table(project_file, chapter_name)
-    
-Next substitution
 
 XlsUtil.update_named_range named_range, spec_cell, fullspec, string_array
 
