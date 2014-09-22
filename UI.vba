@@ -181,10 +181,11 @@ Sub set_location()
     Dim range_name As name
     
     Set named_range = XlsUtil.find_connection(connection_names, file_names, connection_name, file_name, range_name)
-    If range_name Is Nothing Or range_name = "" Then Exit Sub
+    If range_name Is Nothing Then Exit Sub
+    If range_name = "" Then Exit Sub
     If connection_name = "" Then Exit Sub
-    
-    named_range.Delete
+    range_name.Delete
+'    named_range.Delete
     
     ThisRng.name = connection_name
    
@@ -429,11 +430,12 @@ column_cadre = 1
 Dim named_range As range
 Set named_range = Nothing
 Dim range_name As name
-
+Set range_name = Nothing
 
 Set named_range = XlsUtil.find_connection(connection_names, file_names, connection_name, file_name, range_name)
 
-If range_name Is Nothing Or range_name = "" Then Exit Sub
+If range_name Is Nothing Then Exit Sub
+If range_name = "" Then Exit Sub
 If connection_name = "" Then Exit Sub
 
 Dim fullspec() As String
@@ -444,6 +446,7 @@ If result = False Then Exit Sub
 
 Dim spec_cell As range
 Set spec_cell = XlsUtil.find_spec_position(named_range, fullspec)
+If spec_cell Is Nothing Then Exit Sub
 
 XlsUtil.update_named_range named_range, spec_cell, fullspec, string_array
 

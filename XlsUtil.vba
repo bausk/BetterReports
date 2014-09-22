@@ -153,13 +153,13 @@ End Function
 
 Function find_connection(connection_names, file_names, ByRef connection_name, ByRef file_name, ByRef range_name) As range
 Dim named_range As range
-
+On Error GoTo FAIL
 For x = 0 To UBound(connection_names)
     Set range_name = XlsUtil.find_named_range(connection_names(x))
     If Not range_name Is Nothing Then
-        Set named_range = range_name.RefersToRange
         connection_name = connection_names(x)
         file_name = file_names(x)
+        Set named_range = range_name.RefersToRange
         Exit For
     End If
 Next x
@@ -176,6 +176,8 @@ If named_range Is Nothing Then
 End If
 
 Set find_connection = named_range
+FAIL:
+On Error GoTo 0
 End Function
 
 
@@ -234,7 +236,9 @@ For Each substitution In substitutions
     what_name = substitution(1)
     chapter_index = substitution(2)
     Dim keys_array() As String, chapter_table() As Variant
-    chapter_table = FileUtil.extract_table(project_file, chapter_name, keys_array)
+    result = FileUtil.extract_table(project_file, chapter_name, keys_array, chapter_table)
+    
+    If result = False Then GoTo NOPROJECTFILE
     
     index = Utility.in_array(what_name, fullspec)
     If index = -1 Then GoTo CONTINUE
@@ -272,6 +276,11 @@ Next column_increment
 Set affected_range = range(ActiveSheet.Cells(content_init_row, content_init_column), ActiveSheet.Cells(max_row, max_col))
 affected_range.Select
 affected_range.Style = "Output"
+
+Exit Function
+NOPROJECTFILE:
+
+MsgBox "Для вывода отчета требуется файл Project.csv, но он отсутствует или повреждён. Выполните экспорт отчета из Tornado.", vbExclamation
 
 End Function
 

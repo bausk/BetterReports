@@ -51,13 +51,14 @@ On Error GoTo 0
 End Function
 
 
-Function extract_table(filename As String, chapter As String, ByRef keys_array() As String) As Variant()
+Function extract_table(filename As String, chapter As String, ByRef keys_array() As String, ByRef extract_table_array() As Variant) As Boolean
 On Error GoTo FAIL1
 Dim data_array() As Variant
-
+extract_table = False
 Open filename For Input As #1
 Line Input #1, line
-
+Dim result As Boolean
+result = False
 Dim aaa
 
 i = 0
@@ -65,10 +66,14 @@ Do Until EOF(1)
 
 
     Line Input #1, aaa
-    If aaa = chapter Then Exit Do
+    If aaa = chapter Then
+        result = True
+        Exit Do
+        End If
     i = i + 1
 Loop
 
+If result = False Then GoTo FAIL1
 
 i = 0
 Do Until EOF(1)
@@ -96,8 +101,10 @@ Do Until EOF(1)
 Loop
 Close #1
 
-extract_table = data_array
 
+extract_table_array = data_array
+extract_table = True
 FAIL1:
 On Error GoTo 0
+
 End Function
