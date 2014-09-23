@@ -165,14 +165,15 @@ For x = 0 To UBound(connection_names)
 Next x
 
 If named_range Is Nothing Then
-    file_path = FileUtil.get_csv_file_path()
-    For x = 0 To UBound(file_names)
-        If file_path = Utility.get_cwd & file_names(x) Then
-            connection_name = connection_names(x)
-            file_name = file_names(x)
-            Exit For
-        End If
-    Next x
+    'file_path = FileUtil.get_csv_file_path()
+    'For x = 0 To UBound(file_names)
+    '    If file_path = Utility.get_cwd & file_names(x) Then
+    '        connection_name = connection_names(x)
+    '        file_name = file_names(x)
+    '        Exit For
+    '    End If
+    'Next x
+    MsgBox "В таблице нет ни одной ссылки на файл отчета. Вставьте ведомость из шаблона.", vbExclamation
 End If
 
 Set find_connection = named_range

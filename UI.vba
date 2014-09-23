@@ -195,7 +195,7 @@ End Sub
 
 Sub set_defaults()
 
-ActiveSheet.Cells.Clear
+
 'ActiveSheet.Rows.Ungroup
 config.production_settings
 Dim row_cadre As Integer, column_cadre As Integer
@@ -246,9 +246,10 @@ End If
 
 Dim fullspec() As String
 string_array = FileUtil.get_strings_from_file(Utility.get_cwd & file_name, result, fullspec)
-If result = False Then Exit Sub
+If result = False Then GoTo NOFILEFOUND
 
 'write spec
+ActiveSheet.Cells.Clear
 Dim spec_cell As range
 Set spec_cell = ActiveSheet.Cells(row_cadre, column_cadre)
 XlsUtil.reset_spec spec_cell, connection_name, fullspec, keys, values, captions
@@ -293,6 +294,9 @@ Dim style_range As range
 Set style_range = range(first_cell, last_cell)
 style_range.Style = "Output"
 
+Exit Sub
+NOFILEFOUND:
+MsgBox "Файл " & "" & " не найден или поврежден", vbExclamation
 End Sub
 
 
