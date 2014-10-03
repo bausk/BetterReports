@@ -285,9 +285,10 @@ Set affected_range = range(ActiveSheet.Cells(content_init_row, content_init_colu
 affected_range.Select
 
 
-'Dim settings_array() As Variant
-'settings_array = cSettings("Style Locals")
-Set range_style = Utility.get_item_by_property(ThisWorkbook.Styles, "Name", "Output")
+Dim settings_array() As Variant
+settings_array = cSettings("Style Locals")
+
+Set range_style = Utility.get_item_by_property_m(ThisWorkbook.Styles, "Name", settings_array)
 'Utility.choose_one_existing settings_array, ThisWorkbook.Styles(0).name, range_name
 affected_range.Style = range_style
 

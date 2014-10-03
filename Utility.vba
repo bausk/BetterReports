@@ -26,6 +26,18 @@ Function get_item_by_property(iterable As Object, PropertyName As String, value 
     Next x
 End Function
 
+Function get_item_by_property_m(iterable As Object, PropertyName As String, value() As Variant)
+    Set get_item_by_property_m = Nothing
+    For x = 1 To iterable.Count
+        result = CallByName(iterable.Item(x), PropertyName, VbGet)
+        For Each singlevalue In value
+            If singlevalue = result Then
+                Set get_item_by_property_m = iterable.Item(x)
+                Exit For
+            End If
+        Next singlevalue
+    Next x
+End Function
 'Split a string into an array based on a Delimiter and a Text Identifier
 Function parse_csv_line(input_line As String, Optional delimeter As String = ",", Optional text_identifier As String = """") As Variant
 Dim result() As String

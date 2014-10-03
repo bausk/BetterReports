@@ -292,7 +292,9 @@ XlsUtil.update_named_range named_range, spec_cell, fullspec, string_array
 'Style
 Dim style_range As range
 Set style_range = range(first_cell, last_cell)
-Set range_style = Utility.get_item_by_property(ThisWorkbook.Styles, "Name", "Output")
+Dim settings_array() As Variant
+settings_array = cSettings("Style Locals")
+Set range_style = Utility.get_item_by_property(ThisWorkbook.Styles, "Name", settings_array)
 style_range.Style = range_style
 
 Exit Sub
@@ -391,7 +393,9 @@ STYLING:
 'Style
 Dim style_range As range
 Set style_range = range(first_cell, last_cell)
-Set range_style = Utility.get_item_by_property(ThisWorkbook.Styles, "Name", "Output")
+Dim settings_array() As Variant
+settings_array = cSettings("Style Locals")
+Set range_style = Utility.get_item_by_property(ThisWorkbook.Styles, "Name", settings_array)
 style_range.Style = range_style
 
 
