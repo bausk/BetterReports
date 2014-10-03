@@ -31,6 +31,7 @@ Open file_path For Input As #1
 Line Input #1, spec_line
 
 spec = Split(spec_line, ",")
+ReDim Preserve data_array(0)
 
 i = 0
 Do Until EOF(1)

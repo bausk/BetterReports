@@ -245,10 +245,15 @@ For Each substitution In substitutions
     If index = -1 Then GoTo CONTINUE
     
     For i = 0 To UBound(new_array)
+        If UBound(new_array(i)) = -1 Then
+            GoTo EXITFOR
+        End If
+        
         element = new_array(i)(index)
         key_index = Utility.in_array(element, keys_array)
         element = chapter_table(key_index)(chapter_index)
         new_array(i)(index) = element
+EXITFOR:
     Next i
 CONTINUE:
 Next substitution
@@ -267,7 +272,9 @@ For column_increment = 0 To named_range.Columns.Count - 1
     If spec_position > -1 Then
         For y = 0 To UBound(new_array)
             temparray = new_array(y)
+            If UBound(temparray) = -1 Then GoTo EMPTYSTRING
             XlsUtil.write_cell temparray(spec_position), , content_init_row + y, content_init_column + column_increment
+EMPTYSTRING:
         Next y
     End If
     max_row = content_init_row + UBound(new_array)

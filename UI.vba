@@ -344,6 +344,7 @@ If result = False Then Exit Sub
 'write spec
 Dim spec_cell As range
 Set spec_cell = ActiveSheet.Cells(row_cadre, column_cadre)
+
 XlsUtil.reset_spec spec_cell, connection_name, fullspec, keys, values, captions
 'hide spec
 ActiveSheet.Rows(row_cadre).EntireRow.Hidden = True
@@ -376,11 +377,16 @@ column_cadre = 1
 Set named_range = range(Cells(row_cadre, column_cadre), Cells(row_cadre, max_col_cadre))
 named_range.name = connection_name
 
+
 Set last_cell = ActiveSheet.Cells(row_cadre + UBound(string_array), max_col_cadre)
+
+'All scaffolding set. Exit if no actual data to write
+If string_array(0) = "" Then GoTo STYLING
 
 'write data string by string, using update_table
 XlsUtil.update_named_range named_range, spec_cell, fullspec, string_array
 
+STYLING:
 'Style
 Dim style_range As range
 Set style_range = range(first_cell, last_cell)

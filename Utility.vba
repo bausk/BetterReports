@@ -36,6 +36,11 @@ Dim i As Long, n As Long
 Dim tempstring As String, tmp As String
 input_array() = Split(input_line, delimeter)
 
+If UBound(input_array) = -1 Then
+    parse_csv_line = Array()
+    Exit Function
+End If
+
 first_init = True
 For Each x In input_array
 
