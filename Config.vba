@@ -15,6 +15,9 @@ cSettings.Add connection_filenames, "Filenames"
 connection_names = Array("TornadoProject", "TornadoRooms", "TornadoDoors", "TornadoWindows")
 cSettings.Add connection_names, "Names"
 
+style_locals = Array("Output", "Вывод", "Ausgang", "Sortie", "Виведення")
+cSettings.Add style_locals, "Style Locals"
+
 Dim report_formats As Collection
 Set report_formats = New Collection
 report_formats.Add Array("1:NUMBER:Номер помещения", "2:NAME:Наименование", "4:AREA:Площадь, м.кв."), "TornadoRooms"

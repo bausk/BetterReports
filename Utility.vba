@@ -153,6 +153,13 @@ GetProperty = Prop.value
 
 End Function
 
+Function choose_one_existing(choices() As Variant, where, ByRef result As Variant) As Boolean
+choose_one_existing = False
+
+End Function
+
+
+
 Function in_array(value, list_array() As String) As Integer
 in_array = -1
 For x = 0 To UBound(list_array)

@@ -283,7 +283,13 @@ Next column_increment
 
 Set affected_range = range(ActiveSheet.Cells(content_init_row, content_init_column), ActiveSheet.Cells(max_row, max_col))
 affected_range.Select
-affected_range.Style = "Output"
+
+
+'Dim settings_array() As Variant
+'settings_array = cSettings("Style Locals")
+Set range_style = Utility.get_item_by_property(ThisWorkbook.Styles, "Name", "Output")
+'Utility.choose_one_existing settings_array, ThisWorkbook.Styles(0).name, range_name
+affected_range.Style = range_style
 
 Exit Function
 NOPROJECTFILE:
