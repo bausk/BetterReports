@@ -7,6 +7,21 @@ Function get_fullname()
     get_fullname = ThisWorkbook.FullName
 End Function
 
+Function lazy_compare(new_string, old_string) As Boolean
+'lazy comparing two arrays
+lazy_compare = False
+
+'choose smaller bound
+smallerbound = UBound(old_string)
+If UBound(new_string) < UBound(old_string) Then smallerbound = UBound(new_string)
+
+For x = 0 To smallerbound
+    If new_string(x) <> old_string(x) Then Exit Function
+Next x
+
+lazy_compare = True
+End Function
+
 Function get_item_by_name(iterable As Object, name)
     For x = 1 To iterable.Count
         If name = iterable.Item(x).name Then

@@ -158,15 +158,14 @@ End Sub
 
 Sub set_location()
     Dim ThisRng As range
+    Dim processedrange As range
+    
     On Error Resume Next
-    Set ThisRng = Application.InputBox("Выберите область отчета", "Выбрать область", Type:=8)
+    Set ThisRng = Application.InputBox("Выберите активные столбцы (например, $A:$D):", "Выбрать столбцы для отчета", Type:=8)
     On Error GoTo 0
     If ThisRng Is Nothing Then Exit Sub
     
-    'find name
-    
     config.production_settings
-    'Dim row_cadre As Integer, column_cadre As Integer
     Dim keys() As Variant, values() As Variant, captions() As Variant
     
     Dim connection_name As String, file_path As String, file_name As String
@@ -187,7 +186,17 @@ Sub set_location()
     range_name.Delete
 '    named_range.Delete
     
-    ThisRng.name = connection_name
+    actualrow = 4
+    
+    'Add logic about selecting whole columns
+    If ThisRng.row > 4 Then
+        actualrow = ThisRng.row
+    End If
+    
+    Set processedrange = range(Cells(actualrow, ThisRng.column), Cells(actualrow, ThisRng.column + ThisRng.Columns.Count - 1))
+    
+    
+    processedrange.name = connection_name
    
     update
     
@@ -246,13 +255,25 @@ End If
 
 Dim fullspec() As String
 string_array = FileUtil.get_strings_from_file(Utility.get_cwd & file_name, result, fullspec)
+
+'If aggregate, add quantity
+writable_spec = fullspec
+Set temp_setting = cSettings("TypeInfo")
+is_aggregate = temp_setting(connection_name)(0)
+If is_aggregate = True Then
+    fullspec_len = UBound(writable_spec)
+    ReDim Preserve writable_spec(fullspec_len)
+    writable_spec(fullspec_len) = cSettings("Aggregating")
+End If
+'
+
 If result = False Then GoTo NOFILEFOUND
 
 'write spec
 ActiveSheet.Cells.Clear
 Dim spec_cell As range
 Set spec_cell = ActiveSheet.Cells(row_cadre, column_cadre)
-XlsUtil.reset_spec spec_cell, connection_name, fullspec, keys, values, captions
+XlsUtil.reset_spec spec_cell, connection_name, writable_spec, keys, values, captions
 'hide spec
 ActiveSheet.Rows(row_cadre).EntireRow.Hidden = True
 
@@ -294,7 +315,7 @@ Dim style_range As range
 Set style_range = range(first_cell, last_cell)
 Dim settings_array() As Variant
 settings_array = cSettings("Style Locals")
-Set range_style = Utility.get_item_by_property(ThisWorkbook.Styles, "Name", settings_array)
+Set range_style = Utility.get_item_by_property_m(ThisWorkbook.Styles, "Name", settings_array)
 style_range.Style = range_style
 
 Exit Sub
@@ -344,11 +365,26 @@ Dim fullspec() As String
 string_array = FileUtil.get_strings_from_file(Utility.get_cwd & file_name, result, fullspec)
 If result = False Then Exit Sub
 
+
+'If aggregate, add quantity
+Dim writable_spec() As String
+writable_spec = fullspec
+Set temp_setting = cSettings("TypeInfo")
+is_aggregate = temp_setting(connection_name)(0)
+If is_aggregate = True Then
+    fullspec_len = UBound(writable_spec)
+    ReDim Preserve writable_spec(fullspec_len)
+    writable_spec(fullspec_len) = cSettings("Aggregating")
+End If
+'
+
+
+
 'write spec
 Dim spec_cell As range
 Set spec_cell = ActiveSheet.Cells(row_cadre, column_cadre)
 
-XlsUtil.reset_spec spec_cell, connection_name, fullspec, keys, values, captions
+XlsUtil.reset_spec spec_cell, connection_name, writable_spec, keys, values, captions
 'hide spec
 ActiveSheet.Rows(row_cadre).EntireRow.Hidden = True
 
@@ -374,6 +410,8 @@ For x = 0 To UBound(keys)
     End If
 Next x
 
+max_row_cadre = static_cadre
+
 'create named range
 row_cadre = row_cadre + 1
 column_cadre = 1
@@ -381,7 +419,7 @@ Set named_range = range(Cells(row_cadre, column_cadre), Cells(row_cadre, max_col
 named_range.name = connection_name
 
 
-Set last_cell = ActiveSheet.Cells(row_cadre + UBound(string_array), max_col_cadre)
+Set last_cell = ActiveSheet.Cells(max_row_cadre, max_col_cadre)
 
 'All scaffolding set. Exit if no actual data to write
 If string_array(0) = "" Then GoTo STYLING
@@ -395,7 +433,7 @@ Dim style_range As range
 Set style_range = range(first_cell, last_cell)
 Dim settings_array() As Variant
 settings_array = cSettings("Style Locals")
-Set range_style = Utility.get_item_by_property(ThisWorkbook.Styles, "Name", settings_array)
+Set range_style = Utility.get_item_by_property_m(ThisWorkbook.Styles, "Name", settings_array)
 style_range.Style = range_style
 
 

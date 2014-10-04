@@ -231,6 +231,7 @@ Dim chapter_name As String
 file_names = cSettings("Filenames")
 substitutions = cSettings("Substitutions")
 
+'1. Performing substitutions
 project_file = Utility.get_cwd & file_names(0)
 For Each substitution In substitutions
     chapter_name = substitution(0)
@@ -258,13 +259,126 @@ EXITFOR:
 CONTINUE:
 Next substitution
 
-content_init_column = named_range.column
+'Get shortened spec
+colcount = named_range.Columns.Count - 1
+Dim valid_indices() As Integer
+Dim newspec() As String
 spec_row = spec_cell.row
+spec_col = spec_cell.column
+cur_spec_value = Cells(spec_row, spec_col).value
+test_position = Utility.in_array(cur_spec_value, fullspec)
+If test_position > -1 Then
+    val_indices_len = 0
+    ReDim Preserve valid_indices(val_indices_len)
+    ReDim Preserve newspec(val_indices_len)
+    valid_indices(val_indices_len) = test_position
+    newspec(val_indices_len) = cur_spec_value
+End If
+
+For ii = 1 To colcount
+    cur_spec_value = Cells(spec_row, spec_col + ii).value
+    test_position = Utility.in_array(cur_spec_value, fullspec)
+    If test_position > -1 Then
+        val_indices_len = UBound(valid_indices) + 1
+        ReDim Preserve valid_indices(val_indices_len)
+        ReDim Preserve newspec(val_indices_len)
+        valid_indices(val_indices_len) = test_position
+        newspec(val_indices_len) = cur_spec_value
+    End If
+Next ii
+
+'Truncate new_array to actual spec
+'respec new_array from fullspec to conform to newspec using valid_indices
+'Dim valid_array() As Variant
+If Utility.lazy_compare(fullspec, newspec) = True Then GoTo AGGREGATION 'specs are identical, no need to respec
+'otherwise, rewrite each line of new_array
+For ii = 0 To UBound(new_array)
+    old_string = new_array(ii)
+    Dim new_string() As Variant
+    flag = False
+    
+    For Each idx In valid_indices
+        'compile new_string by taking values according to valid_indices
+        If flag = False Then
+            new_len = 0
+            flag = True
+        Else
+            new_len = UBound(new_string) + 1
+            
+        End If
+        ReDim Preserve new_string(new_len)
+        new_string(new_len) = old_string(idx)
+    Next idx
+    'replace old_string with new_string
+    new_array(ii) = new_string
+Next ii
+'truncating complete
+'replace old spec with new spec
+fullspec = newspec
+
+AGGREGATION:
+'Perform aggregation if there is QUANTITY classifier in active spec
+Dim is_aggregate As Boolean
+spec_row = spec_cell.row
+'1. figure out if aggregate.
+Set temp_setting = cSettings("TypeInfo")
+Set name = named_range.name
+is_aggregate = temp_setting(name.name)(0)
+If is_aggregate = False Then GoTo NOAGGREGATE
+
+'2. add to fullspec as last field
+quantity_classifier = cSettings("Aggregating")
+quant_index = UBound(fullspec) + 1
+ReDim Preserve fullspec(quant_index)
+fullspec(quant_index) = quantity_classifier
+
+'3. generate new array
+'3a. init with first string extended with quantity=0
+Dim aggregate_array() As Variant
+ReDim Preserve aggregate_array(0)
+Dim init_string() As Variant
+init_string = new_array(0)
+Dim aggregate_pos As Integer
+aggregate_pos = UBound(init_string) + 1
+
+ReDim Preserve init_string(aggregate_pos)
+init_string(aggregate_pos) = 0
+aggregate_array(0) = init_string
+
+For Each old_string In new_array
+    Dim old_string_srsly() As Variant
+    old_string_srsly = old_string
+    For xx = 0 To UBound(aggregate_array)
+        new_string = aggregate_array(xx)
+        If Utility.lazy_compare(new_string, old_string) = True Then
+            'old_string is same in first elements as new one.
+            'increase quantity by 1, discard old_string by continueing
+            new_string(aggregate_pos) = new_string(aggregate_pos) + 1
+            'no need to look further
+            aggregate_array(xx) = new_string
+            GoTo EXITSCAN
+        End If
+    Next xx
+    'end of foreach iteration means we have a new element to aggregate to
+    'add new line, init with quantity=1
+    ReDim Preserve old_string_srsly(aggregate_pos)
+    old_string_srsly(aggregate_pos) = 1
+    new_line_pos = UBound(aggregate_array) + 1
+    ReDim Preserve aggregate_array(new_line_pos)
+    aggregate_array(new_line_pos) = old_string_srsly
+    
+EXITSCAN:
+    'found and added new quantity, process next line in original array
+Next old_string
+
+'replace new_array with aggregate_array
+new_array = aggregate_array
+
+NOAGGREGATE:
+'we may or may have not replaced the new_array with aggregate array, but that does not influence further logic
+content_init_column = named_range.column
 content_init_row = named_range.row
-'Dim new_array() As Variant
 Dim affected_range As range
-
-
 
 For column_increment = 0 To named_range.Columns.Count - 1
     current_spec_value = ActiveSheet.Cells(spec_row, content_init_column + column_increment).value
