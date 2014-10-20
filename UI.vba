@@ -303,9 +303,24 @@ Set last_cell = ActiveSheet.Cells(max_row_cadre, max_col_cadre)
 If string_array(0) = "" Then GoTo STYLING
 
 'write data string by string, using update_table
+'update_named_range returns affected range
 XlsUtil.update_named_range named_range, spec_cell, fullspec, string_array
 
 STYLING:
+'delete named affected range, if any
+Dim named_range_affected As range
+Dim range_name_affected As name
+str_range_name_affected = connection_name & "Affected"
+Set range_name_affected = XlsUtil.find_named_range(str_range_name_affected)
+If Not range_name_affected Is Nothing Then
+    range_name_affected.Delete
+End If
+
+
+
+'create new affected range
+
+
 'Style
 Dim style_range As range
 Set style_range = range(first_cell, last_cell)
