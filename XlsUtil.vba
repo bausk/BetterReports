@@ -218,7 +218,12 @@ Next x
 
 End Function
 
-Function update_named_range(named_range As range, spec_cell As range, fullspec() As String, string_array() As String)
+Sub update_named_range(named_range As range, spec_cell As range, fullspec() As String, string_array() As String)
+
+'0. Check for no data from CSV parsing
+If UBound(string_array) < 1 Then
+    If string_array(0) = "" Then GoTo NODATA
+End If
 
 Dim new_array() As Variant
 For x = 0 To UBound(string_array)
@@ -406,12 +411,14 @@ Set range_style = Utility.get_item_by_property_m(ThisWorkbook.Styles, "Name", se
 'Utility.choose_one_existing settings_array, ThisWorkbook.Styles(0).name, range_name
 affected_range.Style = range_style
 
-Exit Function
+Exit Sub
 NOPROJECTFILE:
 
 MsgBox "Для вывода отчета требуется файл Project.csv, но он отсутствует или повреждён. Выполните экспорт отчета из Tornado.", vbExclamation
 
-End Function
+NODATA:
+
+End Sub
 
 Function find_spec_position(data_range As range, fullspec() As String) As range
 end_row = data_range.row - 1
