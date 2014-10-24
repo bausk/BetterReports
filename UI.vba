@@ -227,9 +227,11 @@ column_cadre = 1
 
 connection_name = parameter
 
-
+'Delete any remaining named ranges
 For x = 0 To UBound(connection_names)
     Set range_name = XlsUtil.find_named_range(connection_names(x))
+    If Not range_name Is Nothing Then range_name.Delete
+    Set range_name = XlsUtil.find_named_range(connection_names(x) & "Affected")
     If Not range_name Is Nothing Then range_name.Delete
     Set named_range = Nothing
     If connection_name = connection_names(x) Then
@@ -295,7 +297,8 @@ row_cadre = row_cadre + 1
 column_cadre = 1
 Set named_range = range(Cells(row_cadre, column_cadre), Cells(row_cadre, max_col_cadre))
 named_range.name = connection_name
-
+Dim affected_range As range
+'Set affected_range = range("")
 
 Set last_cell = ActiveSheet.Cells(max_row_cadre, max_col_cadre)
 
@@ -304,11 +307,11 @@ If string_array(0) = "" Then GoTo STYLING
 
 'write data string by string, using update_table
 'update_named_range returns affected range
-XlsUtil.update_named_range named_range, spec_cell, fullspec, string_array
+Set affected_range = XlsUtil.update_named_range(named_range, spec_cell, fullspec, string_array)
+
 
 STYLING:
-'delete named affected range, if any
-Dim named_range_affected As range
+'delete name for the affected range, if any
 Dim range_name_affected As name
 str_range_name_affected = connection_name & "Affected"
 Set range_name_affected = XlsUtil.find_named_range(str_range_name_affected)
@@ -318,8 +321,8 @@ End If
 
 
 
-'create new affected range
-
+'create new affected range name
+If Not affected_range Is Nothing Then affected_range.name = str_range_name_affected
 
 'Style
 Dim style_range As range
@@ -395,6 +398,21 @@ Dim spec_cell As range
 Set spec_cell = XlsUtil.find_spec_position(named_range, fullspec)
 If spec_cell Is Nothing Then Exit Sub
 
-XlsUtil.update_named_range named_range, spec_cell, fullspec, string_array
+'flush and delete affected range, if any
+Dim range_name_affected As name
+Dim range_affected As range
+str_range_name_affected = connection_name & "Affected"
+Set range_name_affected = XlsUtil.find_named_range(str_range_name_affected)
+'Set range_affected = XlsUtil.find_range_by_name(range_name_affected)
+
+If Not range_name_affected Is Nothing Then
+    range_name_affected.RefersToRange.Clear
+    
+    range_name_affected.Delete
+End If
+
+
+Set affected_range = XlsUtil.update_named_range(named_range, spec_cell, fullspec, string_array)
+If Not affected_range Is Nothing Then affected_range.name = str_range_name_affected
 
 End Sub

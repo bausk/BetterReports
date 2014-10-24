@@ -150,6 +150,17 @@ If heh Is Nothing Then
 Set find_named_range = heh
 End Function
 
+Function find_range_by_name(range_name As name) As range
+Set find_range_by_name = Nothing
+Dim aaa As Worksheet
+aa = aaa.Names.Item(0).RefersTo
+Set heh = Utility.get_item_by_property(ActiveSheet.Ranges, "Name", range_name)
+If heh Is Nothing Then
+    Exit Function
+    End If
+Set find_range_by_name = heh
+End Function
+
 
 Function find_connection(connection_names, file_names, ByRef connection_name, ByRef file_name, ByRef range_name) As range
 Dim named_range As range
@@ -218,7 +229,8 @@ Next x
 
 End Function
 
-Sub update_named_range(named_range As range, spec_cell As range, fullspec() As String, string_array() As String)
+Function update_named_range(named_range As range, spec_cell As range, fullspec() As String, string_array() As String) As range
+'returns affected range
 
 '0. Check for no data from CSV parsing
 If UBound(string_array) < 1 Then
@@ -384,6 +396,7 @@ NOAGGREGATE:
 content_init_column = named_range.column
 content_init_row = named_range.row
 Dim affected_range As range
+Dim net_affected_range As range
 
 For column_increment = 0 To named_range.Columns.Count - 1
     current_spec_value = ActiveSheet.Cells(spec_row, content_init_column + column_increment).value
@@ -395,14 +408,22 @@ For column_increment = 0 To named_range.Columns.Count - 1
             XlsUtil.write_cell temparray(spec_position), , content_init_row + y, content_init_column + column_increment
 EMPTYSTRING:
         Next y
+        'add cell to net affected range
+        Set range_to_add = range(Cells(content_init_row, content_init_column + column_increment), Cells(content_init_row + UBound(new_array), content_init_column + column_increment))
+        If net_affected_range Is Nothing Then
+            Set net_affected_range = range_to_add
+        End If
+        Set net_affected_range = Union(net_affected_range, range_to_add)
     End If
     max_row = content_init_row + UBound(new_array)
     max_col = content_init_column + column_increment
 Next column_increment
 
+
 Set affected_range = range(ActiveSheet.Cells(content_init_row, content_init_column), ActiveSheet.Cells(max_row, max_col))
 affected_range.Select
 
+Set update_named_range = net_affected_range
 
 Dim settings_array() As Variant
 settings_array = cSettings("Style Locals")
@@ -411,14 +432,14 @@ Set range_style = Utility.get_item_by_property_m(ThisWorkbook.Styles, "Name", se
 'Utility.choose_one_existing settings_array, ThisWorkbook.Styles(0).name, range_name
 affected_range.Style = range_style
 
-Exit Sub
+Exit Function
 NOPROJECTFILE:
 
 MsgBox "Для вывода отчета требуется файл Project.csv, но он отсутствует или повреждён. Выполните экспорт отчета из Tornado.", vbExclamation
 
 NODATA:
 
-End Sub
+End Function
 
 Function find_spec_position(data_range As range, fullspec() As String) As range
 end_row = data_range.row - 1
