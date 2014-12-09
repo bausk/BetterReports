@@ -230,15 +230,20 @@ connection_name = parameter
 'Delete any remaining named ranges
 For x = 0 To UBound(connection_names)
     Set range_name = XlsUtil.find_named_range(connection_names(x))
-    If Not range_name Is Nothing Then range_name.Delete
-    Set range_name = XlsUtil.find_named_range(connection_names(x) & "Affected")
-    If Not range_name Is Nothing Then range_name.Delete
-    Set named_range = Nothing
+    'Additional condition: delete only named ranges that point to ActiveSheet
+    
+    If Not range_name Is Nothing Then
+        If (range_name.RefersToRange.Worksheet Is ActiveSheet) Then
+           If Not range_name Is Nothing Then range_name.Delete
+           Set range_name = XlsUtil.find_named_range(connection_names(x) & "Affected")
+           If Not range_name Is Nothing Then range_name.Delete
+           Set named_range = Nothing
+        End If
+    End If
     If connection_name = connection_names(x) Then
         file_name = file_names(x)
     End If
 Next x
-
 
 
 Dim fullspec() As String
@@ -296,7 +301,9 @@ max_row_cadre = static_cadre
 row_cadre = row_cadre + 1
 column_cadre = 1
 Set named_range = range(Cells(row_cadre, column_cadre), Cells(row_cadre, max_col_cadre))
-named_range.name = connection_name
+''''''''''''''''''''                                                                          !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+named_range.name = "'" & ActiveSheet.name & "'!" & connection_name
 Dim affected_range As range
 'Set affected_range = range("")
 
@@ -313,7 +320,7 @@ Set affected_range = XlsUtil.update_named_range(named_range, spec_cell, fullspec
 STYLING:
 'delete name for the affected range, if any
 Dim range_name_affected As name
-str_range_name_affected = connection_name & "Affected"
+str_range_name_affected = "'" & ActiveSheet.name & "'!" & connection_name & "Affected"
 Set range_name_affected = XlsUtil.find_named_range(str_range_name_affected)
 If Not range_name_affected Is Nothing Then
     range_name_affected.Delete
@@ -322,7 +329,9 @@ End If
 
 
 'create new affected range name
-If Not affected_range Is Nothing Then affected_range.name = str_range_name_affected
+If Not affected_range Is Nothing Then
+    affected_range.name = str_range_name_affected
+End If
 
 'Style
 Dim style_range As range
@@ -401,7 +410,7 @@ If spec_cell Is Nothing Then Exit Sub
 'flush and delete affected range, if any
 Dim range_name_affected As name
 Dim range_affected As range
-str_range_name_affected = connection_name & "Affected"
+str_range_name_affected = "'" & ActiveSheet.name & "'!" & connection_name & "Affected"
 Set range_name_affected = XlsUtil.find_named_range(str_range_name_affected)
 'Set range_affected = XlsUtil.find_range_by_name(range_name_affected)
 

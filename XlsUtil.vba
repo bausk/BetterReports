@@ -94,56 +94,9 @@ col_cadre = original_col_cadre + col_shift + 1
 write_range = True
 End Function
 
-Function add_file_connection(filename, name, Optional sheet As Worksheet, Optional ByRef row_cadre As Integer = 1, Optional ByRef col_cadre As Integer = 1) As Boolean
-If sheet Is Nothing Then
-    Set sheet = ActiveSheet
-End If
-add_file_connection = False
-
-Dim current_connection As QueryTable
-'Dim range_string As String
-
-Set start_range = Cells(row_cadre, col_cadre)
-
-Set current_connection = sheet.QueryTables.Add(Connection:="TEXT;" & filename, Destination:=start_range)
-With current_connection
-    .name = name
-    .FieldNames = True
-    .RowNumbers = False
-    .FillAdjacentFormulas = False
-    .PreserveFormatting = True
-    .RefreshOnFileOpen = False
-    .RefreshStyle = xlOverwriteCells
-    .SavePassword = False
-    .SaveData = True
-    .AdjustColumnWidth = True
-    .RefreshPeriod = 0
-    .TextFilePromptOnRefresh = False
-    .TextFilePlatform = 65001
-    .TextFileStartRow = 1
-    .TextFileParseType = xlDelimited
-    .TextFileTextQualifier = xlTextQualifierDoubleQuote
-    .TextFileConsecutiveDelimiter = False
-    .TextFileTabDelimiter = True
-    .TextFileSemicolonDelimiter = True
-    .TextFileCommaDelimiter = True
-    .TextFileSpaceDelimiter = False
-    .TextFileColumnDataTypes = Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-    .TextFileTrailingMinusNumbers = True
-    .Refresh BackgroundQuery:=False
-
-End With
-
-row_cadre = row_cadre + current_connection.ResultRange.Rows.Count
-col_cadre = col_cadre + current_connection.ResultRange.Columns.Count
-
-add_file_connection = True
-
-End Function
-
 Function find_named_range(range_name) As Variant
 Set find_named_range = Nothing
-Set heh = Utility.get_item_by_property(ActiveWorkbook.Names, "Name", range_name)
+Set heh = Utility.get_item_by_property(ActiveWorkbook.Names, "Name", "'" & ActiveSheet.name & "'!" & range_name)
 If heh Is Nothing Then
     Exit Function
     End If
@@ -160,7 +113,6 @@ If heh Is Nothing Then
     End If
 Set find_range_by_name = heh
 End Function
-
 
 Function find_connection(connection_names, file_names, ByRef connection_name, ByRef file_name, ByRef range_name) As range
 Dim named_range As range
@@ -231,6 +183,9 @@ End Function
 
 Function update_named_range(named_range As range, spec_cell As range, fullspec() As String, string_array() As String) As range
 'returns affected range
+Dim nameLocal As String
+Set name = named_range.name
+nameLocal = Split(name.name, "!")(1)
 
 '0. Check for no data from CSV parsing
 If UBound(string_array) < 1 Then
@@ -339,8 +294,7 @@ Dim is_aggregate As Boolean
 spec_row = spec_cell.row
 '1. figure out if aggregate.
 Set temp_setting = cSettings("TypeInfo")
-Set name = named_range.name
-is_aggregate = temp_setting(name.name)(0)
+is_aggregate = temp_setting(nameLocal)(0)
 If is_aggregate = False Then GoTo NOAGGREGATE
 
 '2. add to fullspec as last field
@@ -436,8 +390,16 @@ Exit Function
 NOPROJECTFILE:
 
 MsgBox "Для вывода отчета требуется файл Project.csv, но он отсутствует или повреждён. Выполните экспорт отчета из Tornado.", vbExclamation
+Exit Function
 
 NODATA:
+
+On Error Resume Next
+Set range_name = XlsUtil.find_named_range(nameLocal & "Affected")
+range(range_name.RefersTo).Clear
+'range(range_name.RefersTo).Delete
+On Error GoTo 0
+'If Not range_name Is Nothing Then range_name.Delete
 
 End Function
 
