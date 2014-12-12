@@ -43,15 +43,15 @@ cSettings.Add report_formats, "Formats"
 Dim report_headings As Collection
 Set report_headings = New Collection
 report_headings.Add "Экспликация помещений", "TornadoRooms"
-report_headings.Add "Ведомость дверных проемов", "TornadoDoors"
-report_headings.Add "Ведомость оконных проемов", "TornadoWindows"
 report_headings.Add "Спецификация марок дверей", "TornadoDoorsCumulative"
+report_headings.Add "Ведомость дверных проемов", "TornadoDoors"
 report_headings.Add "Спецификация марок окон", "TornadoWindowsCumulative"
+report_headings.Add "Ведомость оконных проемов", "TornadoWindows"
 cSettings.Add report_headings, "Captions"
 
 icons = Array( _
     Array("Вставить отчет", 3633, "UI.popup"), _
-    Array("Выбрать &столбцы", 231, "UI.set_location"), _
+    Array("Выбрать &столбцы", 543, "UI.set_location"), _
     Array("Обновить &отчет", 37, "UI.update"), _
     Array("С&нимок", 280, "UI.snapshot") _
     )
@@ -60,9 +60,9 @@ cSettings.Add icons, "Icons"
 templates = Array( _
     Array("Экспликация помещений", "TornadoRooms", 1, 8), _
     Array("Спецификация марок дверей", "TornadoDoorsCumulative", 1, 8), _
+    Array("Ведомость дверных проемов", "TornadoDoors", 1, 8), _
     Array("Спецификация марок окон", "TornadoWindowsCumulative", 1, 8), _
-    Array("Ведомость окон", "TornadoWindows", 1, 8), _
-    Array("Ведомость дверных проемов", "TornadoDoors", 1, 8) _
+    Array("Ведомость окон", "TornadoWindows", 1, 8) _
     )
 cSettings.Add templates, "Templates"
 
